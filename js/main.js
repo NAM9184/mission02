@@ -1,37 +1,46 @@
+import { getNode, attr, addClass, removeClass } from "../lib/dom/index.js";
+import { data } from "./data.js";
+
 const posterList = getNode(".nav > ul");
-const Background = getNode("body");
-const Poster = getNode(".visual img");
-const nickName = getNode(".nickName");
 
-function addClass(node, value) {
-  return node.classList.add(value);
+function bgChange(target ,index){
+  if(typeof target == 'string') target = getNode(target);
+  const gradient = `linear-gradient(to bottom, ${data[index - 1].color[0]}, ${data[index - 1].color[1]})`;
+
+  gsap.fromTo(target, {opacity: 0.5},{opacity: 1});
+  
+  target.style.backgroundImage = gradient;
 }
-function removeClass(node, value) {
-  return node.classList.remove(value);
-}
 
-function handleSlide(e) {
-  e.preventDefault();
 
-  const target = e.target.closest("li");
-  const a = e.target.closest("button");
-  const list = [...posterList.children];
-  console.log(list);
-  if (!target || !a) return;
+const handleSlide = (() => {
+  const poster = getNode(".visual img");
+  const nickName = getNode(".nickName");
+  
+  return function(e) {
+    e.preventDefault();
+    const target = e.target.closest("li");
+    const button = e.target.closest("button");
+    const list = [...posterList.children];
+    if (!target || !button) return;
+    
+    const index = target.dataset.index;
+    
+    nickName.textContent = data[index - 1].name;
+    attr(poster, "src", `./assets/${data[index - 1].name.toLowerCase()}.jpeg`);
+    attr(poster, "alt", data[index - 1].alt);
+    
+    
+    gsap.fromTo(poster,{opacity:0,y:10, },{opacity:1,y: 0 ,ease: Power2.easeInOut, duration: .5})
+    
+    list.forEach((li) => removeClass(li, "is-active"));
+    addClass(target, "is-active");
 
-  const index = target.dataset.index;
-  const SelectedPoster = data[index - 1];
 
-  attr(Poster, "src", `./assets/${SelectedPoster.name.toLowerCase()}.jpeg`);
-  attr(Poster, "alt", SelectedPoster.alt);
-  nickName.textContent = SelectedPoster.name;
+    bgChange('body', index);
+  };
+})();
 
-  const gradient = `linear-gradient(to bottom, ${SelectedPoster.color[0]}, ${SelectedPoster.color[1]})`;
-  Background.style.backgroundImage = gradient;
 
-  list.forEach((li) => removeClass(li, "is-active"));
-
-  addClass(target, "is-active");
-}
 
 posterList.addEventListener("click", handleSlide);

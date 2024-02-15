@@ -34,7 +34,25 @@ body{
   /* max-height: 600px; */
   text-align: center;
   margin-bottom: 1rem;
+  
+  position: relative;
+
 }
+
+.visual::before{
+  content:"";
+  background-image: url(../assets/defaultbg.png);
+  background-size: cover;
+  width: 100%;
+  opacity: 0.5;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: -1;
+}
+
 
 .nav{
   max-width: 600px;
